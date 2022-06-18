@@ -5,7 +5,7 @@ import h5py
 if __name__ == '__main__':
     hdfFile = h5py.File("reinforcement_ros_data.hdf5", "w")
 
-    bagreader = bagpy.bagreader('klyachin.bag')
+    bagreader = bagpy.bagreader('train.bag')
     laserScanCSV = bagreader.message_by_topic('/diffbot/scan')
     twistCSV = bagreader.message_by_topic('/diffbot/mobile_base_controller/cmd_vel')
     rewardCSV = bagreader.message_by_topic('/reward_node')
@@ -16,7 +16,6 @@ if __name__ == '__main__':
 
     firstStepTime = 0
     currentStep = 0
-    count = 0
 
     for i, currentTwist in twist.iterrows():
         if currentStep == 0 and \
@@ -26,16 +25,15 @@ if __name__ == '__main__':
             firstStepTime = currentTwist['Time']
             hdfFile["laserScan"][0][i] = "sdfisdfjo"
             # record twist
+            # record reward minus
+            # record reward plus
+            # record theEnd
+            # if theEnd then break
             continue
         if currentStep == 1:
             currentTime = currentTwist['Time']
             if firstStepTime + 0.5 < currentTime:
-                currentStep = 2
+                currentStep = 0
             continue
-        if currentStep == 2:
-            # record reward
-            currentStep = 0
-            count += 1
 
     hdfFile.close()
-    print(count)
